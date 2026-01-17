@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Calendar, MapPin, Clock, ArrowLeft, Trash2, Save, Upload, Download, Coffee, Camera, Train, Bed, MoreVertical, Edit2, X, Sparkles, Loader2, Cloud, Share2, Search, Link, AlertTriangle, LogIn, LogOut, User, Check } from 'lucide-react';
+import { Plus, Calendar, MapPin,  ArrowLeft, Trash2, Upload, Download, Coffee, Camera, Train, Bed,  Edit2, X, Sparkles, Loader2, Cloud,  AlertTriangle,  LogOut, User, Check } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, doc, getDoc, setDoc, collection } from 'firebase/firestore';
-import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 
 // --- Configuration ---
 const apiKey = ""; // Gemini API Key
