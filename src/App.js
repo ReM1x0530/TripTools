@@ -544,8 +544,9 @@ export default function App() {
       </div>
   );
 
-  const renderTripList = () => (
+const renderTripList = () => (
     <div className="max-w-md mx-auto min-h-screen bg-gray-50 pb-20">
+      {/* --- Header 區域 (維持不變) --- */}
       <header className="bg-teal-600 text-white p-6 rounded-b-3xl shadow-lg mb-6 flex justify-between items-start">
         <div>
             <h1 className="text-2xl font-bold mb-1">我的旅程</h1>
@@ -568,65 +569,79 @@ export default function App() {
         </div>
       </header>
       
+      {/* --- 列表區域 (這裡是大改版的地方！) --- */}
       <div className="px-4 space-y-4">
         {trips.map(trip => (
           <div 
             key={trip.id}
             onClick={() => { setActiveTripId(trip.id); setActiveDay(1); setCurrentView('detail'); }}
-            className="bg-white rounded-2xl shadow-sm p-4 active:scale-95 transition-transform cursor-pointer border border-gray-100 relative overflow-hidden group"
+            // 1. 改成 relative + overflow-hidden 讓背景圖不溢出
+            // 2. 移除 bg-white，改用 min-h 設定高度確保圖片顯示
+            className="relative overflow-hidden rounded-2xl shadow-md cursor-pointer group min-h-[120px] transition-all hover:shadow-lg hover:-translate-y-1"
           >
-            <div className="absolute right-4 top-4 flex space-x-2">
-               {trip.cloudId && (
-                   <span className="bg-teal-50 text-teal-600 text-[10px] px-2 py-1 rounded-full font-bold flex items-center">
-                       <Cloud size={10} className="mr-1" /> {trip.cloudId}
-                   </span>
-               )}
-               <button 
-                onClick={(e) => handleDeleteTrip(e, trip.id)}
-                className="p-2 bg-red-50 text-red-400 rounded-full hover:bg-red-100 opacity-0 group-hover:opacity-100 transition-opacity"
-               >
-                 <Trash2 size={16} />
-               </button>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-gray-200 rounded-xl overflow-hidden flex-shrink-0">
-                 {trip.coverImage ? (
-                   <img src={trip.coverImage} alt="cover" className="w-full h-full object-cover" />
-                 ) : (
-                   <div className="w-full h-full flex items-center justify-center bg-teal-100 text-teal-600">
-                     <MapPin />
-                   </div>
-                 )}
-              </div>
-              <div>
-                <h3 className="font-bold text-lg text-gray-800">{trip.title}</h3>
-                <div className="flex items-center text-gray-500 text-sm mt-1">
-                  <Calendar size={14} className="mr-1" />
-                  {trip.startDate}
+            {/* --- 背景圖片層 (使用你的 Google Drive 照片) --- */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+              style={{ 
+                // 這裡使用了 Google Drive 的縮圖連結技巧，讓圖片可以直接顯示
+                backgroundImage: `url('https://drive.google.com/thumbnail?id=1R0QDDCgwzQBZkhSKCRmOl4W1W3dK9z4q&sz=w1000')` 
+              }}
+            />
+
+            {/* --- 黑色遮罩層 (讓文字看得清楚) --- */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/30" />
+
+            {/* --- 內容層 (加入 relative 和 z-10 確保浮在圖片上面) --- */}
+            <div className="relative z-10 p-4 h-full flex flex-col justify-between">
+                
+                {/* 上排：雲端標籤 & 刪除按鈕 */}
+                <div className="flex justify-between items-start">
+                    {trip.cloudId ? (
+                        <span className="bg-teal-500/80 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-full font-bold flex items-center shadow-sm">
+                            <Cloud size={10} className="mr-1" /> {trip.cloudId}
+                        </span>
+                    ) : <span></span>} {/* 空 span 佔位用 */}
+
+                    <button 
+                        onClick={(e) => handleDeleteTrip(e, trip.id)}
+                        className="p-2 bg-white/20 backdrop-blur-md text-white rounded-full hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                    >
+                        <Trash2 size={16} />
+                    </button>
                 </div>
-                <div className="text-xs text-gray-400 mt-1">
-                  共 {Object.keys(trip.days).length} 天
+
+                {/* 下排：標題與資訊 */}
+                <div className="mt-4">
+                    <h3 className="font-bold text-xl text-white drop-shadow-md mb-1">{trip.title}</h3>
+                    <div className="flex items-center text-gray-200 text-sm">
+                        <Calendar size={14} className="mr-1" />
+                        <span className="mr-3">{trip.startDate}</span>
+                        <span className="text-gray-300 text-xs bg-black/30 px-2 py-0.5 rounded">
+                            共 {Object.keys(trip.days).length} 天
+                        </span>
+                    </div>
                 </div>
-              </div>
             </div>
           </div>
         ))}
 
+        {/* 建立新行程按鈕 (維持不變) */}
         <button 
           onClick={handleCreateTrip}
-          className="w-full py-4 border-2 border-dashed border-gray-300 rounded-2xl text-gray-500 font-medium flex items-center justify-center hover:bg-gray-50 transition-colors"
+          className="w-full py-4 border-2 border-dashed border-gray-300 rounded-2xl text-gray-500 font-medium flex items-center justify-center hover:bg-gray-50 hover:border-teal-500 hover:text-teal-600 transition-colors bg-white"
         >
           <Plus size={20} className="mr-2" />
           建立新行程
         </button>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 flex justify-around text-xs text-gray-500">
-         <div className="flex flex-col items-center cursor-pointer" onClick={handleExport}>
+      {/* --- Footer 區域 (維持不變) --- */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 flex justify-around text-xs text-gray-500 z-50">
+         <div className="flex flex-col items-center cursor-pointer hover:text-teal-600 transition-colors" onClick={handleExport}>
             <Download size={20} className="mb-1 text-teal-600" />
             <span>備份資料</span>
          </div>
-         <div className="flex flex-col items-center cursor-pointer" onClick={() => setShowCloudModal(true)}>
+         <div className="flex flex-col items-center cursor-pointer hover:text-teal-600 transition-colors" onClick={() => setShowCloudModal(true)}>
             <Cloud size={20} className="mb-1 text-teal-600" />
             <span>雲端同步</span>
          </div>
